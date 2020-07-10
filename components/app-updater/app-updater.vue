@@ -9,7 +9,8 @@
 					</view>
 				</view>
 				<view class="updater-modalBtn-box">
-					<button v-if="!isForceUpdate" class="updater-modal-btn updater-gray-outline" hover-class="updater-outline-hover" @tap="closeModal">稍后更新</button>
+					<button v-if="!isForceUpdate" class="updater-modal-btn updater-gray-outline" hover-class="updater-outline-hover"
+					 @tap="closeModal">稍后更新</button>
 					<button class="updater-modal-btn updater-primary" hover-class="updater-primary-hover" @tap="confirmModal">立即更新</button>
 				</view>
 			</view>
@@ -47,8 +48,7 @@
 				downloadUrl: '',
 				contentList: [],
 				versionCode: '',
-				isForceUpdate: 0,
-				updateData: {}
+				isForceUpdate: 0
 			};
 		},
 		mounted() {
@@ -88,13 +88,22 @@
 				this.checkVersion(curVersion).then(res => {
 					if (res.code === 200) {
 						this.updateData = res.data
-						this.versionCode = res.data.versionCode;
-						this.downloadUrl = res.data.versionDownloadUrl;
-						if (res.data.versionDesc) {
-							this.contentList = res.data.versionDesc.split('|');
+						const {
+							versionName,
+							versionCode,
+							versionDownloadUrl,
+							versionDesc,
+							isForceUpdate
+						} = res.data
+						this.versionCode = versionCode;
+						this.downloadUrl = versionDownloadUrl;
+						this.isForceUpdate = isForceUpdate
+						if (versionDesc) {
+							this.contentList = versionDesc.split('|');
 						} else {
-							this.contentList = ['发现新版本', `${res.data.versionName}`]
+							this.contentList = ['发现新版本', `${versionName}`]
 						}
+						this.$emit('change', res.data)
 						this.showModal();
 					} else if (showtip) {
 						this.$tips.toast('没有新版本')
@@ -111,7 +120,7 @@
 							versionCode: 2,
 							versionDownloadUrl: 'http://www.baidu.com',
 							versionDesc: '检测到您有新版本可以更新V1.0.0|1. 优化登录流程|2. 优化注册流程',
-							isForceUpdate: false
+							isForceUpdate: true
 						},
 						msg: 'success'
 					}
@@ -209,11 +218,11 @@
 		margin-left: 0;
 		margin-right: 0;
 	}
-	
-	.updater-modal-btn + .updater-modal-btn {
+
+	.updater-modal-btn+.updater-modal-btn {
 		margin-left: 30rpx;
 	}
-		
+
 
 	.updater-modal-btn::after {
 		content: "";
