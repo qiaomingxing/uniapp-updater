@@ -4,17 +4,17 @@
 			<view>
 				<view class="updater-modal-title">版本更新</view>
 				<view class="updater-modal-content">
-					<view class="updater-desc">
-						<view class="updater-mtop" v-for="(item, index) in contentList" :key="index">{{ item }}</view>
+					<view class="is-text-left">
+						<view v-for="(item, index) in contentList" :key="index">{{ item }}</view>
 					</view>
 				</view>
 				<view class="updater-modalBtn-box">
-					<button class="updater-modal-btn updater-gray-outline" hover-class="updater-outline-hover" @tap="closeModal()">稍后更新</button>
-					<button class="updater-modal-btn updater-primary" hover-class="updater-primary-hover" @tap="confirmModal()">立即更新</button>
+					<button v-if="!isForceUpdate" class="updater-modal-btn updater-gray-outline" hover-class="updater-outline-hover" @tap="closeModal">稍后更新</button>
+					<button class="updater-modal-btn updater-primary" hover-class="updater-primary-hover" @tap="confirmModal">立即更新</button>
 				</view>
 			</view>
 		</view>
-		<view class="updater-modal-mask" :class="[modalVisible?'updater-mask-show':'']" @tap="maskClick()"></view>
+		<view class="updater-modal-mask" :class="[modalVisible?'updater-mask-show':'']" @tap="maskClick"></view>
 	</view>
 </template>
 
@@ -38,7 +38,7 @@
 			//点击遮罩 是否可关闭
 			maskClosable: {
 				type: Boolean,
-				default: true
+				default: false
 			}
 		},
 		data() {
@@ -47,36 +47,17 @@
 				downloadUrl: '',
 				contentList: [],
 				versionCode: '',
-				isForce: 0,
+				isForceUpdate: 0,
 				updateData: {}
 			};
 		},
 		mounted() {
-			if (this.auto) {
+			if (this.auto && !this.isCheckedUpdate) {
 				this.checkUpdate();
 			}
 		},
-		onBackPress() {
-			this.closeModal();
-		},
-		onBackPress(event) {
-			if (this.isForce === 1) {
-				return true;
-			} else {
-				this.closeModal();
-				return false;
-			}
-		},
 		methods: {
-			// 按钮点击事件
-			handleClick(e) {
-				if (!this.show) return;
-				const dataset = e.currentTarget.dataset;
-				this.$emit('click', {
-					index: Number(dataset.index)
-				});
-			},
-			// 遮层点击
+			// 遮层点击事件
 			maskClick() {
 				if (!this.maskClosable) return;
 				this.closeModal()
@@ -130,7 +111,7 @@
 							versionCode: 2,
 							versionDownloadUrl: 'http://www.baidu.com',
 							versionDesc: '检测到您有新版本可以更新V1.0.0|1. 优化登录流程|2. 优化注册流程',
-							isForce: 0
+							isForceUpdate: false
 						},
 						msg: 'success'
 					}
@@ -193,7 +174,7 @@
 		text-align: center;
 		font-size: 34rpx;
 		color: #333;
-		padding-top: 20rpx;
+		padding: 10rpx 0;
 		font-weight: bold;
 	}
 
@@ -202,15 +183,7 @@
 		color: #999;
 		font-size: 28rpx;
 		padding-top: 20rpx;
-		padding-bottom: 60rpx;
-	}
-
-	.updater-mtop {
-		margin-top: 10rpx;
-	}
-
-	.updater-mbtm {
-		margin-bottom: 30rpx;
+		padding-bottom: 40rpx;
 	}
 
 	.updater-modalBtn-box {
@@ -225,16 +198,22 @@
 	}
 
 	.updater-modal-btn {
+		flex: 1;
 		width: 46%;
-		height: 68rpx;
-		line-height: 68rpx;
+		height: 76rpx;
+		line-height: 76rpx;
 		position: relative;
 		border-radius: 10rpx;
-		font-size: 24rpx;
+		font-size: 28rpx;
 		overflow: visible;
 		margin-left: 0;
 		margin-right: 0;
 	}
+	
+	.updater-modal-btn + .updater-modal-btn {
+		margin-left: 30rpx;
+	}
+		
 
 	.updater-modal-btn::after {
 		content: "";
@@ -250,27 +229,23 @@
 		border-radius: 20rpx;
 	}
 
-	.updater-btn-width {
-		width: 80% !important;
-	}
-
 	.updater-primary {
-		background: #5677fc;
+		background: #16a98c;
 		color: #fff;
 	}
 
 	.updater-primary-hover {
-		background: #4a67d6;
+		background: rgba(22, 169, 140, 0.7);
 		color: #e5e5e5;
 	}
 
 	.updater-primary-outline {
-		color: #5677fc;
+		color: #16a98c;
 		background: none;
 	}
 
 	.updater-primary-outline::after {
-		border: 1px solid #5677fc;
+		border: 1px solid #16a98c;
 	}
 
 	.updater-danger {
@@ -399,7 +374,7 @@
 		border-radius: 80rpx !important;
 	}
 
-	.updater-desc {
+	.is-text-left {
 		text-align: left;
 	}
 </style>
