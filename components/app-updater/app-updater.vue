@@ -97,16 +97,12 @@
 						} = res.data
 						this.versionCode = versionCode;
 						this.downloadUrl = versionDownloadUrl;
-						this.isForceUpdate = isForceUpdate
-						if (versionDesc) {
-							this.contentList = versionDesc.split('|');
-						} else {
-							this.contentList = ['发现新版本', `${versionName}`]
-						}
+						this.isForceUpdate = isForceUpdate;
+						this.contentList = versionDesc ? versionDesc.split('|') : [`发现新版本 ${versionName}`];
 						this.$emit('change', res.data)
 						this.showModal();
 					} else if (showtip) {
-						this.$tips.toast('没有新版本')
+						this.$tips.toast('已是最新版本')
 					}
 				});
 			},
